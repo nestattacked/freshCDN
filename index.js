@@ -15,7 +15,6 @@ var cdn = new aliyun.CDN({
     apiVersion: '2014-11-11'
 });
 
-
 function pushToCDN(url){
     cdn.pushObjectCache({
         ObjectPath: url
@@ -24,7 +23,13 @@ function pushToCDN(url){
 
 recursive(config.serverPath,function(err,files){
     files.forEach(function(file){
+        //push file to CDN
         var url = file.replace(config.serverPath, config.hostName);
         pushToCDN(url);
+        //if url contains index.html, push url without index.html again
+        if(url.indexOf('index.html')!==-1){
+            url = url.replace('index.html','');
+            pushToCDN(url);
+        }
     });
 });
